@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs');
+const cliProgress = require('cli-progress');
+
 
 const args = process.argv.slice(2)
 const nameIndex = args.indexOf('--filename');
@@ -16,8 +18,26 @@ function dataURLtoFile(dataurl, filename, ext) {
     fs.writeFileSync(path.join(__dirname, dir, filename + `.${ext}`), buf);
 }
 
-res.forEach((item) => {
+console.log('Start converting...');
+const count = res?.length;
+
+if (!count) {
+    console.log('No data found');
+    process.exit(1);
+}
+
+const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+// Start the progress bar with a total value of 200 and start value of 0
+bar.start(count, 0);
+
+
+res.forEach((item, index) => {
     const dataurl = `data:${item.media_type};base64,${item.resource_content}`;
     dataURLtoFile(dataurl, item.resource_name, item.extension);
-    console.log(`${item.resource_name} done`);
+    bar.update(index + 1);
 });
+
+bar.stop();
+console.log('All done');
+console.log(`Total: ${count} files`);
+process.exit(0);

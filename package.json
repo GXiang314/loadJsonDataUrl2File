@@ -7,5 +7,8 @@
     "json": "node index.js --filename"
   },
   "author": "GXiang",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cli-progress": "^3.12.0"
+  }
 }
